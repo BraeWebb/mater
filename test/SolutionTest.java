@@ -11,6 +11,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.assertNotNull;
@@ -48,7 +49,9 @@ public class SolutionTest {
      */
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> data() {
-        return new ArrayList<>(listFiles("examples", "input_"));
+        List<String[]> files = listFiles("examples", "input_");
+        files.sort((String[] o1, String[] o2) -> o1[0].compareTo(o2[0]));
+        return new ArrayList<>(files);
     }
 
     private String inputFile;
