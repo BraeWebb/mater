@@ -2,7 +2,6 @@ package solution;
 
 import problem.ProblemSpec;
 
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -34,8 +33,8 @@ public class TreeNode {
         this.qValue = 0; // not sure what this should start at
     }
 
-    public TreeNode() {
-        this(null, null);
+    public TreeNode(ProblemSpec problem) {
+        this(null, problem);
     }
 
     public void selectAction() {
@@ -53,7 +52,8 @@ public class TreeNode {
 
         TreeNode nodeToExplore = current.select();
         visited.add(nodeToExplore);
-        double newValue = simulate();
+
+        double newValue = nodeToExplore.simulate();
         for (TreeNode seen : visited) {
             seen.backpropagate(newValue);
         }
