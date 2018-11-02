@@ -1,4 +1,4 @@
-# COMP3702 Assignment 2 - mater
+# mater
 
 An artificially intelligent robot to choose the
 best strategy to win in a racing car game.
