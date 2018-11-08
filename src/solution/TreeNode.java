@@ -1,9 +1,11 @@
 package solution;
 
+import problem.Action;
+import problem.ActionType;
 import problem.ProblemSpec;
+import simulator.State;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Represents a node in a search tree (used for MCTS)
@@ -14,13 +16,14 @@ public class TreeNode {
     private TreeNode parent;
 
     // the children of this node
-    private TreeNode[] children;
+    private Map<TreeNode, Action> children;
 
     private ProblemSpec problem;
 
-    private int numActions;
-    private int numVisits;
-    private int qValue;
+    private State state; //is this needed?
+
+    int numVisits;
+    int qValue;
 
     /**
      * Constructs a new TreeNode object
@@ -28,7 +31,7 @@ public class TreeNode {
     public TreeNode(TreeNode parent, ProblemSpec problem) {
         this.parent = parent;
         this.problem = problem;
-        this.numActions = problem.getLevel().getAvailableActions().size();
+
         this.numVisits = 0;
         this.qValue = 0; // not sure what this should start at
     }
@@ -37,32 +40,10 @@ public class TreeNode {
         this(null, problem);
     }
 
-    public void selectAction() {
-        List<TreeNode> visited = new LinkedList<>();
-        TreeNode current = this;
-        visited.add(this);
-
-        while (!current.isLeaf()) {
-            current = current.select();
-            visited.add(current);
-        }
-
-        // current is now a leaf node and needs to be expanded
-        current.expand();
-
-        TreeNode nodeToExplore = current.select();
-        visited.add(nodeToExplore);
-
-        double newValue = nodeToExplore.simulate();
-        for (TreeNode seen : visited) {
-            seen.backpropagate(newValue);
-        }
-    }
-
-    private TreeNode select() {
+    TreeNode select() {
         TreeNode selected = null;
         double currentBest = Double.MIN_VALUE;
-        for (TreeNode child : children) {
+        for (TreeNode child : children.keySet()) {
             double uct = child.uctValue();
             if (uct > currentBest) {
                 selected = child;
@@ -74,22 +55,21 @@ public class TreeNode {
     }
 
     private double uctValue() {
+        if(numVisits == 0) {
+            return -1;
+        }
         return (qValue / numVisits) + Math.sqrt(Math.log(numVisits + 1) / numVisits);
     }
 
-    private void expand() {
-        children = new TreeNode[numActions];
-        for (int i = 0; i < numActions; i++) {
-            children[i] = new TreeNode(this, problem);
+    void expand() {
+        children = new HashMap<>();
+        List<Action> actions = Util.getLevelActions(problem);
+        for (Action action : actions) {
+            children.put(new TreeNode(this, problem), action);
         }
     }
 
-    private double simulate() {
-        // do the thing
-        return 0;
-    }
-
-    private void backpropagate(double value) {
+    void backpropagate(double value) {
         numVisits++;
         qValue += value; // might wanna average with current rather than just adding? idk
     }
@@ -101,7 +81,7 @@ public class TreeNode {
     /**
      * @return the children of this node
      */
-    public TreeNode[] getChildren() {
+    public Map<TreeNode, Action> getChildren() {
         return children;
     }
 }
