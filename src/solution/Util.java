@@ -3,6 +3,7 @@ package solution;
 import problem.Action;
 import problem.ActionType;
 import problem.ProblemSpec;
+import simulator.Simulator;
 import simulator.State;
 
 import java.util.ArrayList;
@@ -32,9 +33,12 @@ public class Util {
 
     public static List<Action> getLevelActions(ProblemSpec spec) {
         List<Action> actions = new LinkedList<>();
-        for(ActionType type : spec.getLevel().getAvailableActions()) {
+        /*for(ActionType type : spec.getLevel().getAvailableActions()) {
             actions.add(new Action(type));
-        }
+        }*/
+        actions.add(new Action(ActionType.MOVE));
+        actions.add(new Action(ActionType.CHANGE_CAR, spec.getCarOrder().get(0)));
+        actions.add(new Action(ActionType.CHANGE_CAR, spec.getCarOrder().get(1)));
         return actions;
     }
 }

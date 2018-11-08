@@ -6,8 +6,10 @@ import problem.ProblemSpec;
 import simulator.Simulator;
 import simulator.State;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class Tree {
     private final static int SIM_TIME = 10000; //10 seconds
@@ -15,11 +17,20 @@ public class Tree {
     private TreeNode root;
     private ProblemSpec problem;
     private Simulator sim;
+    private boolean solved;
 
-    public Tree(ProblemSpec problem, Simulator sim) {
+    public Tree(ProblemSpec problem, Simulator sim, boolean expand) {
         this.root = new TreeNode(problem);
         this.problem = problem;
         this.sim = sim;
+        this.solved = false;
+        if(expand) {
+            root.expand();
+        }
+    }
+
+    public Tree(ProblemSpec problem, Simulator sim) {
+        this(problem, sim, false);
     }
 
     private double simulate(List<Action> actionsTaken) {
@@ -28,8 +39,12 @@ public class Tree {
         State pre = null;
         for(Action action : actionsTaken) {
             State post = sim.step(action);
+            if(post == null) {
+                return -100; //not a valid branch
+            }
             value += Util.getReward(problem, pre, post);
             if(post.getPos() == problem.getN()) {
+                solved = true;
                 return value; //goal state reached
             }
             pre = post;
@@ -39,8 +54,12 @@ public class Tree {
         while(System.currentTimeMillis() < endTime) {
             Action action = new Action(ActionType.MOVE); //TODO: use a better heuristic
             State post = sim.step(action);
+            if(post == null) {
+                return value;
+            }
             value += Util.getReward(problem, pre, post);
             if(post.getPos() == problem.getN()) {
+                solved = true;
                 return value; //goal state reached
             }
             pre = post;
@@ -55,12 +74,13 @@ public class Tree {
         visited.add(root);
 
         while (!current.isLeaf()) {
-            current = current.select();
-            visited.add(current);
-            actionsTaken.add(current.getChildren().get(current));
+            TreeNode selected = current.select();
+            visited.add(selected);
+            actionsTaken.add(current.getChildren().get(selected));
+            current = selected;
         }
 
-        if(current.numVisits != 0) {
+        if(current.hasSimulated()) {
             current.expand();
             visited.add(current.select());
         }
@@ -69,5 +89,14 @@ public class Tree {
         for (TreeNode seen : visited) {
             seen.backpropagate(newValue);
         }
+    }
+
+    public boolean isSolved() {
+        return solved;
+    }
+
+    //used for debugging purposes
+    public void preorder() {
+        root.preorder();
     }
 }

@@ -22,8 +22,8 @@ public class TreeNode {
 
     private State state; //is this needed?
 
-    int numVisits;
-    int qValue;
+    private int numVisits;
+    private int qValue;
 
     /**
      * Constructs a new TreeNode object
@@ -33,7 +33,7 @@ public class TreeNode {
         this.problem = problem;
 
         this.numVisits = 0;
-        this.qValue = 0; // not sure what this should start at
+        this.qValue = 0;
     }
 
     public TreeNode(ProblemSpec problem) {
@@ -42,8 +42,11 @@ public class TreeNode {
 
     TreeNode select() {
         TreeNode selected = null;
-        double currentBest = Double.MIN_VALUE;
+        double currentBest = -Double.MAX_VALUE;
         for (TreeNode child : children.keySet()) {
+            if(child.numVisits == 0) {
+                return child;
+            }
             double uct = child.uctValue();
             if (uct > currentBest) {
                 selected = child;
@@ -55,9 +58,6 @@ public class TreeNode {
     }
 
     private double uctValue() {
-        if(numVisits == 0) {
-            return -1;
-        }
         return (qValue / numVisits) + Math.sqrt(Math.log(numVisits + 1) / numVisits);
     }
 
@@ -83,5 +83,20 @@ public class TreeNode {
      */
     public Map<TreeNode, Action> getChildren() {
         return children;
+    }
+
+    public boolean hasSimulated() {
+        return numVisits > 0;
+    }
+
+    public void preorder() {
+        System.out.println("Node value: " + qValue);
+        if(children == null) {
+            return;
+        }
+        for(Map.Entry<TreeNode, Action> entry : children.entrySet()) {
+            System.out.println(entry.getValue().getActionType() + " " + entry.getValue().getCarType());
+            entry.getKey().preorder();
+        }
     }
 }
