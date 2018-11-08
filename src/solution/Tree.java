@@ -39,8 +39,8 @@ public class Tree {
         State pre = null;
         for(Action action : actionsTaken) {
             State post = sim.step(action);
-            if(post == null) {
-                return -100; //not a valid branch
+            if(post == null || (pre == post && action.getActionType() != ActionType.MOVE)) {
+                return -100; //not a valid branch or not a useful action
             }
             value += Util.getReward(problem, pre, post);
             if(post.getPos() == problem.getN()) {

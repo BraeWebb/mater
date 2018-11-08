@@ -48,7 +48,7 @@ public class Solution {
     }
 
     public static void main(String[] args) throws java.io.IOException {
-        Solution sol = new Solution(new ProblemSpec("examples/level_1/input_lvl1.txt"));
+        Solution sol = new Solution(new ProblemSpec("examples/level_4/input_lvl4.txt"));
         sol.mcts();
     }
 }
