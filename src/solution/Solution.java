@@ -13,6 +13,7 @@ public class Solution {
     // problem specification for the solution
     private static final int TIME_LIMIT = 120000; //2 minutes
     private ProblemSpec problem;
+    private int timeLimit;
     private String output;
 
     public boolean mcts() {
@@ -20,12 +21,12 @@ public class Solution {
         Tree tree = new Tree(problem, sim, true);
 
         long startTime = System.currentTimeMillis();
-        long endTime = startTime + TIME_LIMIT;
+        long endTime = startTime + timeLimit;
         while(!tree.isSolved() && System.currentTimeMillis() < endTime) {
             tree.selectAction();
         }
         if(!tree.isSolved()) {
-            System.out.println("Could not solve within 2 minutes");
+            System.out.println("Could not solve within 2 seconds");
         } else {
             System.out.println("Problem solved!");
         }
@@ -36,9 +37,14 @@ public class Solution {
     /**
      * Load a new problem file to produce solution
      */
-    public Solution(ProblemSpec problemSpec) {
-        problem = problemSpec;
+    public Solution(ProblemSpec problem, int timeout) {
+        this.timeLimit = timeout;
+        this.problem = problem;
         this.output = "examples/level_1/myoutput.txt"; //TODO: don't hardcode this
+    }
+
+    public Solution(ProblemSpec problem) {
+        this(problem, TIME_LIMIT);
     }
 
     public Action nextAction() {
