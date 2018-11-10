@@ -63,15 +63,6 @@ public class SolutionTest {
     }
 
     @Test
-    public void testValidProblemSpec(){
-        try {
-            ProblemSpec problem = new ProblemSpec(inputFile);
-        } catch (IOException exception) {
-            fail(exception.getMessage());
-        }
-    }
-
-    @Test
     public void testSolution() throws IOException {
         ProblemSpec problem = new ProblemSpec(inputFile);
         Solution solution = new Solution(problem);
