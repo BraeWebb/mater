@@ -9,3 +9,4 @@ best strategy to win in a racing car game.
 * [Henry O'Brien](https://github.com/hobrien17)
 
 ![](icon.png)
+
