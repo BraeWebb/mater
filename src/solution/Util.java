@@ -10,6 +10,10 @@ import java.util.List;
 
 public class Util {
     public static double getReward(ProblemSpec spec, State startState, State endState) {
+        return heuristic02(spec, startState, endState);
+    }
+
+    private static double heuristic01(ProblemSpec spec, State startState, State endState) {
         int n = spec.getN();
         int endPos = endState.getPos();
         if(endPos == n) {
@@ -27,6 +31,24 @@ public class Util {
         } else {
             return endPos - startPos; //small reward for going forwards
         }
+    }
+
+    private static double heuristic02(ProblemSpec spec, State startState, State endState) {
+        int n = spec.getN();
+        int endPos = endState.getPos();
+        if(endPos == n) {
+            return 100; //big reward for reaching goal state
+        }
+
+        if(startState == null) {
+            return endPos;
+        }
+        int startPos = startState.getPos();
+
+        if (startPos != endPos) {
+            return 10;
+        }
+        return 0;
     }
 
     //this method may need some refactoring

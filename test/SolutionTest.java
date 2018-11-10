@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public class SolutionTest {
 
-    private static final boolean DO_HACK = true;
+    private static final boolean DO_HACK = false;
 
     /**
      * Recursively load all files in a directory starting with a specific string.
