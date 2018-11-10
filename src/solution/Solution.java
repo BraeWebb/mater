@@ -11,17 +11,31 @@ import simulator.State;
  */
 public class Solution {
     // problem specification for the solution
-    private static final int TIME_LIMIT = 120000; //2 minutes
+    private static final int TIME_LIMIT = 30000; //2 minutes
     private int timeLimit;
     private ProblemSpec problem;
     private String output;
 
+    public boolean basicMCTS() {
+        timeLimit = TIME_LIMIT;
+        if(mcts()) {
+            System.out.println("Problem solved!");
+            return true;
+        } else {
+            System.out.println("Problem could not be solved in the time limit");
+            return false;
+        }
+    }
+
     public boolean advancedMCTS() {
         timeLimit = TIME_LIMIT;
         if(!mcts()) {
+            System.out.println("Initial attempt failed");
             timeLimit = 5000;
             int stepsLeft = problem.getMaxT() * 3;
+            int counter = 1;
             while(stepsLeft > 0) {
+                System.out.println("Trying re-attempt " + counter + " of " + problem.getMaxT());
                 if(mcts()) {
                     System.out.println("Problem solved!");
                     return true;
@@ -32,10 +46,11 @@ public class Solution {
             System.out.println("Problem solved!");
             return true;
         }
+        System.out.println("Problem could not be solved in the time limit");
         return false;
     }
 
-    public boolean mcts() {
+    private boolean mcts() {
         Simulator sim = new Simulator(problem, output);
         Tree tree = new Tree(problem, sim, true);
 
@@ -43,11 +58,6 @@ public class Solution {
         long endTime = startTime + timeLimit;
         while(!tree.isSolved() && System.currentTimeMillis() < endTime) {
             tree.selectAction();
-        }
-        if(!tree.isSolved()) {
-            //System.out.println("Could not solve within 2 minutes");
-        } else {
-            //System.out.println("Problem solved!");
         }
 
         return tree.isSolved();

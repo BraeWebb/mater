@@ -67,23 +67,11 @@ public class SolutionTest {
     public void testSolution() throws IOException {
         ProblemSpec problem = new ProblemSpec(inputFile);
 
+        Solution solution = new Solution(problem);
         if (!DO_HACK) {
-            Solution solution = new Solution(problem, 120000);
-            assertTrue("Failed to find a solution", solution.mcts());
-            return;
+            assertTrue("Failed to find a solution", solution.basicMCTS());
+        } else {
+            assertTrue("Failed to find a solution", solution.advancedMCTS());
         }
-
-        int attemptCount = 60;
-        boolean solved = false;
-        for (int i = 0; i < attemptCount; i++) {
-            System.out.println("Trying " + i + " of " + attemptCount);
-            System.out.flush();
-            Solution solution = new Solution(problem, 2000);
-            if (solution.mcts()) {
-                solved = true;
-                break;
-            }
-        }
-        assertTrue("Failed to find a solution", solved);
     }
 }
