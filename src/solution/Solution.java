@@ -15,7 +15,7 @@ public class Solution {
     private ProblemSpec problem;
     private String output;
 
-    public void mcts() {
+    public boolean mcts() {
         Simulator sim = new Simulator(problem, output);
         Tree tree = new Tree(problem, sim, true);
 
@@ -29,6 +29,8 @@ public class Solution {
         } else {
             System.out.println("Problem solved!");
         }
+
+        return tree.isSolved();
     }
 
     /**
@@ -48,7 +50,7 @@ public class Solution {
     }
 
     public static void main(String[] args) throws java.io.IOException {
-        Solution sol = new Solution(new ProblemSpec("examples/level_4/input_lvl4.txt"));
+        Solution sol = new Solution(new ProblemSpec("examples/level_1/input_lvl1_2.txt"));
         sol.mcts();
     }
 }

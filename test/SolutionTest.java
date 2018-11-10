@@ -1,20 +1,16 @@
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
-import problem.Action;
 import problem.ProblemSpec;
-import simulator.Simulator;
-import simulator.State;
 import solution.Solution;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 @RunWith(Parameterized.class)
@@ -76,24 +72,10 @@ public class SolutionTest {
     }
 
     @Test
-    public void testFindsSolution() throws IOException {
+    public void testSolution() throws IOException {
         ProblemSpec problem = new ProblemSpec(inputFile);
         Solution solution = new Solution(problem);
-        Simulator sim = new Simulator(problem, "/dev/null");
 
-        State state = sim.reset();
-        Action action;
-
-        while (state != null) {
-            action = solution.nextAction();
-            state = sim.step(action);
-            solution.addState(state);
-
-            if (sim.isGoalState(state)) {
-                break;
-            }
-        }
-
-        assertNotNull("Failed to find a solution", state);
+        assertTrue("Failed to find a solution", solution.mcts());
     }
 }
