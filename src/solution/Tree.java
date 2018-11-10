@@ -94,9 +94,4 @@ public class Tree {
     public boolean isSolved() {
         return solved;
     }
-
-    //used for debugging purposes
-    public void preorder() {
-        root.preorder();
-    }
 }

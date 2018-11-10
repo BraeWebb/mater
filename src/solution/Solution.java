@@ -12,9 +12,28 @@ import simulator.State;
 public class Solution {
     // problem specification for the solution
     private static final int TIME_LIMIT = 120000; //2 minutes
-    private ProblemSpec problem;
     private int timeLimit;
+    private ProblemSpec problem;
     private String output;
+
+    public boolean advancedMCTS() {
+        timeLimit = TIME_LIMIT;
+        if(!mcts()) {
+            timeLimit = 5000;
+            int stepsLeft = problem.getMaxT() * 3;
+            while(stepsLeft > 0) {
+                if(mcts()) {
+                    System.out.println("Problem solved!");
+                    return true;
+                }
+                stepsLeft--;
+            }
+        } else {
+            System.out.println("Problem solved!");
+            return true;
+        }
+        return false;
+    }
 
     public boolean mcts() {
         Simulator sim = new Simulator(problem, output);
@@ -26,9 +45,9 @@ public class Solution {
             tree.selectAction();
         }
         if(!tree.isSolved()) {
-            System.out.println("Could not solve within 2 seconds");
+            //System.out.println("Could not solve within 2 minutes");
         } else {
-            System.out.println("Problem solved!");
+            //System.out.println("Problem solved!");
         }
 
         return tree.isSolved();
@@ -37,14 +56,9 @@ public class Solution {
     /**
      * Load a new problem file to produce solution
      */
-    public Solution(ProblemSpec problem, int timeout) {
-        this.timeLimit = timeout;
-        this.problem = problem;
+    public Solution(ProblemSpec problemSpec) {
+        problem = problemSpec;
         this.output = "examples/level_1/myoutput.txt"; //TODO: don't hardcode this
-    }
-
-    public Solution(ProblemSpec problem) {
-        this(problem, TIME_LIMIT);
     }
 
     public Action nextAction() {
@@ -56,7 +70,7 @@ public class Solution {
     }
 
     public static void main(String[] args) throws java.io.IOException {
-        Solution sol = new Solution(new ProblemSpec("examples/level_1/input_lvl1_2.txt"));
-        sol.mcts();
+        Solution sol = new Solution(new ProblemSpec("examples/level_4/input_lvl4_2.txt"));
+        sol.advancedMCTS();
     }
 }
