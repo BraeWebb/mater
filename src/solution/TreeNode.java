@@ -89,14 +89,14 @@ public class TreeNode {
         return numVisits > 0;
     }
 
-    public void preorder() {
-        System.out.println("Node value: " + qValue);
+    public int preorder() {
+        int count = 1;
         if(children == null) {
-            return;
+            return count;
         }
         for(Map.Entry<TreeNode, Action> entry : children.entrySet()) {
-            System.out.println(entry.getValue().getActionType() + " " + entry.getValue().getCarType());
-            entry.getKey().preorder();
+            count += entry.getKey().preorder();
         }
+        return count;
     }
 }
