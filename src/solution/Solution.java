@@ -11,14 +11,14 @@ import simulator.State;
  */
 public class Solution {
     // problem specification for the solution
-    private static final int TIME_LIMIT = 30000; //2 minutes
+    private static final int TIME_LIMIT = 60000; //60 seconds
     private int timeLimit;
     private ProblemSpec problem;
     private String output;
 
     public boolean basicMCTS() {
         timeLimit = TIME_LIMIT;
-        if(mcts()) {
+        if(mcts(0)) {
             System.out.println("Problem solved!");
             return true;
         } else {
@@ -29,18 +29,21 @@ public class Solution {
 
     public boolean advancedMCTS() {
         timeLimit = TIME_LIMIT;
-        if(!mcts()) {
+        if(!mcts(0) || !mcts(1)) {
             System.out.println("Initial attempt failed");
             timeLimit = 5000;
             int stepsLeft = problem.getMaxT() * 3;
             int counter = 1;
+            int heuristic = 0;
             while(stepsLeft > 0) {
                 System.out.println("Trying re-attempt " + counter + " of " + problem.getMaxT());
-                if(mcts()) {
+                if(mcts(heuristic)) {
                     System.out.println("Problem solved!");
                     return true;
                 }
                 stepsLeft--;
+                counter++;
+                heuristic = (heuristic + 1) % 2;
             }
         } else {
             System.out.println("Problem solved!");
@@ -50,9 +53,9 @@ public class Solution {
         return false;
     }
 
-    private boolean mcts() {
+    private boolean mcts(int heuristic) {
         Simulator sim = new Simulator(problem, output);
-        Tree tree = new Tree(problem, sim, true);
+        Tree tree = new Tree(problem, sim, true, heuristic);
 
         long startTime = System.currentTimeMillis();
         long endTime = startTime + timeLimit;
@@ -60,6 +63,7 @@ public class Solution {
             tree.selectAction();
         }
 
+        System.out.println("Number of nodes - " + tree.numNodes());
         return tree.isSolved();
     }
 
@@ -80,7 +84,7 @@ public class Solution {
     }
 
     public static void main(String[] args) throws java.io.IOException {
-        Solution sol = new Solution(new ProblemSpec("examples/level_4/input_lvl4_2.txt"));
+        Solution sol = new Solution(new ProblemSpec("examples/level_1/input_lvl1_2.txt"));
         sol.advancedMCTS();
     }
 }

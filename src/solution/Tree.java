@@ -12,14 +12,17 @@ import java.util.List;
 import java.util.Map;
 
 public class Tree {
-    private final static int SIM_TIME = 10000; //10 seconds
+    private final static int SIM_TIME = 5000; //5 seconds
 
     private TreeNode root;
     private ProblemSpec problem;
     private Simulator sim;
     private boolean solved;
+    private int heuristicChoice;
 
-    public Tree(ProblemSpec problem, Simulator sim, boolean expand) {
+    public Tree(ProblemSpec problem, Simulator sim, boolean expand, int heuristic) {
+        System.out.println(heuristic);
+        this.heuristicChoice = heuristic;
         this.root = new TreeNode(problem);
         this.problem = problem;
         this.sim = sim;
@@ -30,7 +33,7 @@ public class Tree {
     }
 
     public Tree(ProblemSpec problem, Simulator sim) {
-        this(problem, sim, false);
+        this(problem, sim, false, 0);
     }
 
     private double simulate(List<Action> actionsTaken) {
@@ -42,9 +45,10 @@ public class Tree {
             if(post == null || (pre == post && action.getActionType() != ActionType.MOVE)) {
                 return -100; //not a valid branch or not a useful action
             }
-            value += Util.getReward(problem, pre, post);
+            value += Util.getReward(problem, pre, post, heuristicChoice);
             if(post.getPos() == problem.getN()) {
                 solved = true;
+                System.out.println("Reward value: " + value);
                 return value; //goal state reached
             }
             pre = post;
@@ -57,9 +61,10 @@ public class Tree {
             if(post == null) {
                 return value;
             }
-            value += Util.getReward(problem, pre, post);
+            value += Util.getReward(problem, pre, post, heuristicChoice);
             if(post.getPos() == problem.getN()) {
                 solved = true;
+                System.out.println("Reward value: " + value);
                 return value; //goal state reached
             }
             pre = post;
@@ -93,5 +98,9 @@ public class Tree {
 
     public boolean isSolved() {
         return solved;
+    }
+
+    public int numNodes() {
+        return root.preorder();
     }
 }

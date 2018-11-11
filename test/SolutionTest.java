@@ -15,7 +15,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public class SolutionTest {
 
-    private static final boolean DO_HACK = false;
+    private static final boolean DO_HACK = true;
 
     /**
      * Recursively load all files in a directory starting with a specific string.
@@ -63,7 +63,7 @@ public class SolutionTest {
         this.inputFile = inputFile;
     }
 
-    @Test(timeout = 120000)
+    @Test(timeout = 570000)
     public void testSolution() throws IOException {
         ProblemSpec problem = new ProblemSpec(inputFile);
 

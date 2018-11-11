@@ -9,15 +9,23 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Util {
-    public static double getReward(ProblemSpec spec, State startState, State endState) {
-        return heuristic02(spec, startState, endState);
+    public static double getReward(ProblemSpec spec, State startState, State endState, int choice) {
+        switch(choice) {
+            case 0:
+                return heuristic00(spec, startState, endState);
+            case 1:
+                return heuristic01(spec, startState, endState);
+        }
+        return 0;
     }
 
-    private static double heuristic01(ProblemSpec spec, State startState, State endState) {
+    private static double heuristic00(ProblemSpec spec, State startState, State endState) {
         int n = spec.getN();
         int endPos = endState.getPos();
         if(endPos == n) {
             return 100; //big reward for reaching goal state
+        } else if(endState.isInBreakdownCondition() || endState.isInSlipCondition()) {
+            return -5;
         }
 
         if(startState == null) {
@@ -25,15 +33,15 @@ public class Util {
         }
         int startPos = startState.getPos();
         if(startPos == endPos) {
-            return -1; //small penalty for staying in the same state
+            return -0.1; //small penalty for staying in the same state
         } else if(startPos > endPos) {
-            return endPos - startPos - 1; //relatively small penalty for going backwards
+            return endPos - startPos; //relatively small penalty for going backwards
         } else {
             return endPos - startPos; //small reward for going forwards
         }
     }
 
-    private static double heuristic02(ProblemSpec spec, State startState, State endState) {
+    private static double heuristic01(ProblemSpec spec, State startState, State endState) {
         int n = spec.getN();
         int endPos = endState.getPos();
         if(endPos == n) {
