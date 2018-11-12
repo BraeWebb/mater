@@ -8,6 +8,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.assertTrue;
@@ -15,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 @RunWith(Parameterized.class)
 public class SolutionTest {
 
+    // perform the hack
     private static final boolean DO_HACK = true;
 
     /**
@@ -47,7 +49,7 @@ public class SolutionTest {
     @Parameterized.Parameters(name = "{0}")
     public static Collection<Object[]> data() {
         List<String[]> files = listFiles("examples", "input_");
-        files.sort((String[] o1, String[] o2) -> o1[0].compareTo(o2[0]));
+        files.sort(Comparator.comparing(file -> file[0]));
         return new ArrayList<>(files);
     }
 
@@ -63,11 +65,24 @@ public class SolutionTest {
         this.inputFile = inputFile;
     }
 
+    /**
+     * Return an output file for a given input file
+     *
+     * i.e. myfile.txt -> myfile.out
+     */
+    private static String outputFile(String inputFile) {
+        int extensionIndex = inputFile.lastIndexOf('.');
+
+        String name = inputFile.substring(0, extensionIndex);
+
+        return name + ".out";
+    }
+
     @Test(timeout = 570000)
     public void testSolution() throws IOException {
         ProblemSpec problem = new ProblemSpec(inputFile);
+        Solution solution = new Solution(problem, outputFile(inputFile));
 
-        Solution solution = new Solution(problem);
         if (!DO_HACK) {
             assertTrue("Failed to find a solution", solution.basicMCTS());
         } else {
