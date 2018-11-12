@@ -71,8 +71,9 @@ public class SolutionTest {
      * i.e. myfile.txt -> myfile.out
      */
     private static String outputFile(String inputFile) {
-        int extensionIndex = inputFile.lastIndexOf('.');
+        inputFile = inputFile.replaceAll("input_", "output_");
 
+        int extensionIndex = inputFile.lastIndexOf('.');
         String name = inputFile.substring(0, extensionIndex);
 
         return name + ".out";
