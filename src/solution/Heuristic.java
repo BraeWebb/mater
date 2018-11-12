@@ -6,7 +6,7 @@ import simulator.State;
 /**
  * Utility class for managing multiple differing heuristic functions
  */
-public abstract class Heuristic {
+public interface Heuristic {
 
     /**
      * Abstract heuristic method to calculate the heuristic for transitioning
@@ -18,7 +18,7 @@ public abstract class Heuristic {
      *
      * @return The reward for the relevant transition
      */
-    public abstract double heuristic(ProblemSpec spec, State start, State end);
+    double heuristic(ProblemSpec spec, State start, State end);
 
     /**
      * Return the Heuristic calculator for a given type of heuristic
@@ -27,25 +27,15 @@ public abstract class Heuristic {
      * @return A Heuristic containing the associated heuristic method for the
      *          given heuristic type
      */
-    public static Heuristic getHeuristic(HeuristicType type) {
+    static Heuristic getHeuristic(HeuristicType type) {
         switch (type) {
             case BASIC:
-                return new Heuristic() {
-                    @Override
-                    public double heuristic(ProblemSpec spec, State start, State end) {
-                        return Heuristic.heuristic01(spec, start, end);
-                    }
-                };
+                return Heuristic::heuristic01;
             case ADVANCED:
-                return new Heuristic() {
-                    @Override
-                    public double heuristic(ProblemSpec spec, State start, State end) {
-                        return Heuristic.heuristic00(spec, start, end);
-                    }
-                };
+                return Heuristic::heuristic00;
+            default:
+                return null;
         }
-
-        return null;
     }
 
     /**
@@ -60,7 +50,7 @@ public abstract class Heuristic {
      *
      * @return The reward for the relevant transition
      */
-    private static double heuristic00(ProblemSpec spec, State startState, State endState) {
+    static double heuristic00(ProblemSpec spec, State startState, State endState) {
         int endPos = endState.getPos();
         if (endPos == spec.getN()) {
             return 100; //big reward for reaching goal state
@@ -92,7 +82,7 @@ public abstract class Heuristic {
      *
      * @return The reward for the relevant transition
      */
-    private static double heuristic01(ProblemSpec spec, State startState, State endState) {
+    static double heuristic01(ProblemSpec spec, State startState, State endState) {
         int endPos = endState.getPos();
         if(endPos == spec.getN()) {
             return 100; //big reward for reaching goal state
