@@ -18,9 +18,9 @@ public class Tree {
     private ProblemSpec problem;
     private Simulator sim;
     private boolean solved;
-    private int heuristicChoice;
+    private HeuristicType heuristicChoice;
 
-    public Tree(ProblemSpec problem, Simulator sim, boolean expand, int heuristic) {
+    public Tree(ProblemSpec problem, Simulator sim, boolean expand, HeuristicType heuristic) {
         System.out.println(heuristic);
         this.heuristicChoice = heuristic;
         this.root = new TreeNode(problem);
@@ -33,7 +33,7 @@ public class Tree {
     }
 
     public Tree(ProblemSpec problem, Simulator sim) {
-        this(problem, sim, false, 0);
+        this(problem, sim, false, HeuristicType.ADVANCED);
     }
 
     private double simulate(List<Action> actionsTaken) {
@@ -45,7 +45,7 @@ public class Tree {
             if(post == null || (pre == post && action.getActionType() != ActionType.MOVE)) {
                 return -100; //not a valid branch or not a useful action
             }
-            value += Util.getReward(problem, pre, post, heuristicChoice);
+            value += Util.calculateReward(problem, pre, post, heuristicChoice);
             if(post.getPos() == problem.getN()) {
                 solved = true;
                 System.out.println("Reward value: " + value);
@@ -61,7 +61,7 @@ public class Tree {
             if(post == null) {
                 return value;
             }
-            value += Util.getReward(problem, pre, post, heuristicChoice);
+            value += Util.calculateReward(problem, pre, post, heuristicChoice);
             if(post.getPos() == problem.getN()) {
                 solved = true;
                 System.out.println("Reward value: " + value);

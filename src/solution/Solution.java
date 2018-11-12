@@ -1,10 +1,9 @@
 package solution;
 
-import problem.Action;
-import problem.ActionType;
 import problem.ProblemSpec;
 import simulator.Simulator;
-import simulator.State;
+
+import java.io.IOException;
 
 /**
  * Class to run the solution on a given problem input
@@ -18,7 +17,7 @@ public class Solution {
 
     public boolean basicMCTS() {
         timeLimit = TIME_LIMIT;
-        if(mcts(0)) {
+        if(mcts(HeuristicType.ADVANCED)) {
             System.out.println("Problem solved!");
             return true;
         } else {
@@ -29,7 +28,7 @@ public class Solution {
 
     public boolean advancedMCTS() {
         timeLimit = TIME_LIMIT;
-        if(!mcts(0) || !mcts(1)) {
+        if(!mcts(HeuristicType.ADVANCED) || !mcts(HeuristicType.BASIC)) {
             System.out.println("Initial attempt failed");
             timeLimit = 5000;
             int stepsLeft = problem.getMaxT() * 3;
@@ -37,13 +36,13 @@ public class Solution {
             int heuristic = 0;
             while(stepsLeft > 0) {
                 System.out.println("Trying re-attempt " + counter + " of " + problem.getMaxT());
-                if(mcts(heuristic)) {
+                if(mcts(HeuristicType.values()[heuristic])) {
                     System.out.println("Problem solved!");
                     return true;
                 }
                 stepsLeft--;
                 counter++;
-                heuristic = (heuristic + 1) % 2;
+                heuristic = (heuristic + 1) % HeuristicType.values().length;
             }
         } else {
             System.out.println("Problem solved!");
@@ -53,7 +52,14 @@ public class Solution {
         return false;
     }
 
-    private boolean mcts(int heuristic) {
+    /**
+     * Perform Monte-Carlo Tree Search for a the problem until solved
+     * or time limit reached
+     *
+     * @param heuristic The heuristic function to use
+     * @return true iff a solution was reached
+     */
+    private boolean mcts(HeuristicType heuristic) {
         Simulator sim = new Simulator(problem, output);
         Tree tree = new Tree(problem, sim, true, heuristic);
 
@@ -70,21 +76,21 @@ public class Solution {
     /**
      * Load a new problem file to produce solution
      */
-    public Solution(ProblemSpec problemSpec) {
-        problem = problemSpec;
-        this.output = "examples/level_1/myoutput.txt"; //TODO: don't hardcode this
+    public Solution(ProblemSpec problem, String output) {
+        this.problem = problem;
+        this.output = output;
     }
 
-    public Action nextAction() {
-        return new Action(ActionType.MOVE);
-    }
+    public static void main(String[] args) throws IOException {
+        if (args.length != 2) {
+            System.err.println("Invalid Usage: java ProgramName inputFileName outputFileName");
+            System.exit(1);
+        }
 
-    public void addState(State state) {
+        String input = args[0];
+        String output = args[1];
 
-    }
-
-    public static void main(String[] args) throws java.io.IOException {
-        Solution sol = new Solution(new ProblemSpec("examples/level_1/input_lvl1_2.txt"));
+        Solution sol = new Solution(new ProblemSpec(input), output);
         sol.advancedMCTS();
     }
 }
