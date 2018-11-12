@@ -1,6 +1,6 @@
-
 out/
-
 \.idea/
-
 *.iml
+junit-benchmarks-0.7.2.jar
+dist/
+examples/*/output_*
