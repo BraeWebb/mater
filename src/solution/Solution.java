@@ -4,6 +4,7 @@ import problem.ProblemSpec;
 import simulator.Simulator;
 
 import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * Class to run the solution on a given problem input
@@ -11,31 +12,46 @@ import java.io.IOException;
 public class Solution {
     // problem specification for the solution
     private static final int TIME_LIMIT = 60000; //60 seconds
+    // Logger to log messages to
+    private static final Logger LOGGER = Logger.getLogger(Solution.class.getName());
     private int timeLimit;
     private ProblemSpec problem;
     private String output;
 
+    /**
+     * Attempt to solve the problem with an advanced heuristic using the full
+     * time limit
+     *
+     * @return true iff a solution was reached
+     */
     public boolean basicMCTS() {
         timeLimit = TIME_LIMIT;
-        if(mcts(HeuristicType.ADVANCED)) {
-            System.out.println("Problem solved!");
+        if (mcts(HeuristicType.ADVANCED)) {
+            LOGGER.info("Problem solved!");
             return true;
         } else {
-            System.out.println("Problem could not be solved in the time limit");
+            LOGGER.info("Problem could not be solved in the time limit");
             return false;
         }
     }
 
+    /**
+     * Attempt to solve the problem with an advanced heuristic then an
+     * alternation of basic and advanced heuristics repeatedly with
+     * short time limits
+     *
+     * @return true iff a solution was reached
+     */
     public boolean advancedMCTS() {
         timeLimit = TIME_LIMIT;
         if(!mcts(HeuristicType.ADVANCED) || !mcts(HeuristicType.BASIC)) {
-            System.out.println("Initial attempt failed");
+            LOGGER.warning("Initial attempt failed");
             timeLimit = 5000;
             int stepsLeft = problem.getMaxT() * 3;
             int counter = 1;
             int heuristic = 0;
             while(stepsLeft > 0) {
-                System.out.println("Trying re-attempt " + counter + " of " + problem.getMaxT());
+                LOGGER.warning("Trying re-attempt " + counter + " of " + problem.getMaxT());
                 if(mcts(HeuristicType.values()[heuristic])) {
                     System.out.println("Problem solved!");
                     return true;
@@ -60,8 +76,8 @@ public class Solution {
      * @return true iff a solution was reached
      */
     private boolean mcts(HeuristicType heuristic) {
-        Simulator sim = new Simulator(problem, output);
-        Tree tree = new Tree(problem, sim, true, heuristic);
+        Simulator simulator = new Simulator(problem, output);
+        Tree tree = new Tree(problem, simulator, true, heuristic);
 
         long startTime = System.currentTimeMillis();
         long endTime = startTime + timeLimit;
@@ -69,7 +85,7 @@ public class Solution {
             tree.selectAction();
         }
 
-        System.out.println("Number of nodes - " + tree.numNodes());
+        LOGGER.fine("Number of nodes - " + tree.numNodes());
         return tree.isSolved();
     }
 
